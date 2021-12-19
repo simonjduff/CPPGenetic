@@ -11,7 +11,7 @@ class Crossbreeder {
 public:
     Crossbreeder(int genomeBits);
     // Crossbreed returns new genomes based on the combindation of those passed in
-    std::array<Genome, 2> Crossbreed(Genome left[], Genome right[], int cutIndexes[]);
+    Genome Crossbreed(Genome left, Genome right, int cutIndexes[]);
 private:
     int _bitCount;
 };
