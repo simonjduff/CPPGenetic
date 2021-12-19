@@ -4,10 +4,6 @@
 
 #include "Crossbreeder.h"
 
-Crossbreeder::Crossbreeder(int genomeBits) {
-    _bitCount = genomeBits;
-}
-
 Genome Crossbreeder::Crossbreed(Genome left, Genome right, std::array<int, 2>cutIndexes) {
     std::sort(cutIndexes.begin(), cutIndexes.end());
 

@@ -19,10 +19,9 @@ typedef uint64_t Genome;
 class Genomes {
 public:
     /*
-     * genomeSize - number of int64s required to hold the genome
      * populationCount - number of organisms
      */
-    Genomes(int genomeSize, int populationCount);
+    Genomes(int populationCount);
 
 private:
     int _genomeSize;

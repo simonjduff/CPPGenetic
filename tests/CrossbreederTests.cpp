@@ -9,7 +9,7 @@ TEST(CrossbreedTests, 90Bits2Cuts) {
     uint64_t left = UINT64_MAX;
     uint64_t right = 0;
 
-    auto crossbreeder = std::make_unique<Crossbreeder>(90);
+    auto crossbreeder = std::make_unique<Crossbreeder>();
 
     // The cuts count right to left. so a cut at 2 is at binary 10
     std::array<int,2> cuts = {30, 50};

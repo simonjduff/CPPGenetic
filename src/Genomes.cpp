@@ -4,10 +4,9 @@
 
 #include "Genomes.h"
 
-Genomes::Genomes(int genomeSize, int populationCount){
-    _genomeSize = genomeSize;
+Genomes::Genomes(int populationCount){
     _populationCount = populationCount;
-    _genomes = std::make_unique<Genome[]>(genomeSize * populationCount);
+    _genomes = std::make_unique<Genome[]>(populationCount);
     _fitness = std::make_unique<std::map<GenomeIndex,Fitness>>();
     std::mt19937 _rng(time(NULL));
     _randomGenomeIndex = std::uniform_int_distribution<int> (0, _populationCount - 1);

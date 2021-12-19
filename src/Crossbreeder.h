@@ -10,11 +10,9 @@
 
 class Crossbreeder {
 public:
-    Crossbreeder(int genomeBits);
     // Crossbreed returns new genomes based on the combindation of those passed in
     Genome Crossbreed(Genome left, Genome right, std::array<int, 2> cutIndexes);
 private:
-    int _bitCount;
 };
 
 
