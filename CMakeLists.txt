@@ -3,4 +3,7 @@ project(Genetic)
 
 set(CMAKE_CXX_STANDARD 20)
 
-add_executable(Genetic main.cpp Genomes.cpp Genomes.h)
+add_subdirectory(src)
+add_subdirectory(tests)
+
+add_executable(${PROJECT_NAME} main.cpp)
