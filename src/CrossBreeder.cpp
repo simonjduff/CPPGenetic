@@ -3,16 +3,18 @@
 //
 
 #include "Crossbreeder.h"
-#include <iostream>
+
 Crossbreeder::Crossbreeder(int genomeBits) {
     _bitCount = genomeBits;
 }
 
-Genome Crossbreeder::Crossbreed(Genome left, Genome right, int *cutIndexes) {
-    int int64sRequired = _bitCount / 64;
-    if (_bitCount%64 > 0){
-        int64sRequired++;
-    }
+Genome Crossbreeder::Crossbreed(Genome left, Genome right, std::array<int, 2>cutIndexes) {
+    std::sort(cutIndexes.begin(), cutIndexes.end());
 
-    return 0;
+    Genome mask = (Genome)pow(2, 64-cutIndexes[1])-1;
+    mask = mask << cutIndexes[1];
+    mask |= (uint64_t)pow(2, cutIndexes[0])-1;
+    uint64_t invertedMask = ~mask;
+
+    return (mask & left) | (invertedMask & right);
 }
