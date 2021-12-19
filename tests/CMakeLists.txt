@@ -20,6 +20,6 @@ enable_testing()
 set (SRCS CrossbreederTests.cpp)
 
 add_executable(${PROJECT_NAME} ${SRCS})
-target_link_libraries(${PROJECT_NAME} gtest gtest_main)
+
 
 add_test(NAME tests COMMAND test)
