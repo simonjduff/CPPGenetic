@@ -17,7 +17,7 @@ FetchContent_MakeAvailable(googletest)
 #End Google Test
 enable_testing()
 
-set (SRCS CrossbreederTests.cpp)
+file(GLOB_RECURSE SRCS *.cpp)
 
 add_executable(${PROJECT_NAME} ${SRCS})
 
