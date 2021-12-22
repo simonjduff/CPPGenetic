@@ -9,6 +9,10 @@
 Genome Crossbreeder::Crossbreed(Genome left, Genome right, std::array<int, 2>cutIndexes) {
     std::sort(cutIndexes.begin(), cutIndexes.end());
 
+    if (cutIndexes[cutIndexes.size() - 1] > 63){
+        throw CrossbreedExceptions::CutOutOfBoundsException(cutIndexes[cutIndexes.size() - 1]);
+    }
+
     if (sizeof(cutIndexes) > 1) {
         for (int i = 1; i < cutIndexes.size(); i++) {
             if (cutIndexes[i] == cutIndexes[i - 1]) {
@@ -28,7 +32,7 @@ Genome Crossbreeder::Crossbreed(Genome left, Genome right, std::array<int, 2>cut
     // Move the first mask all the way left
     mask = mask << cutIndexes[1];
     // Add a mask of 1s the size of right cut
-    mask |= (uint64_t)pow(2, cutIndexes[0])-1;
+    mask |= (uint64_t)pow(2, cutIndexes[0]+1)-1;
     // Invert the mask for the other parent to map
     uint64_t invertedMask = ~mask;
 

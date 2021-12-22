@@ -1,7 +1,5 @@
 //
-// Created by Bastett on 22/12/2021.
-//
-
+// Created by Simon Duff
 #ifndef GENETIC_TYPES_H
 #define GENETIC_TYPES_H
 
