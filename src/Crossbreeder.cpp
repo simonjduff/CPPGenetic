@@ -2,6 +2,7 @@
 // Created by Simon Duff on 19/12/2021.
 //
 
+#include <algorithm>
 #include "Crossbreeder.h"
 #include "CrossbreedExceptions.h"
 

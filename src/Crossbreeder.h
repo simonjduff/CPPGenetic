@@ -6,11 +6,11 @@
 #define GENETIC_CROSSBREEDER_H
 
 #include <array>
-#include "Genomes.h"
+#include "Types.h"
 
 class Crossbreeder {
 public:
-    // Crossbreed returns new genomes based on the combindation of those passed in
+    // Crossbreed returns new genomes based on the combination of those passed in
     Genome Crossbreed(Genome left, Genome right, std::array<int, 2> cutIndexes);
 private:
 };

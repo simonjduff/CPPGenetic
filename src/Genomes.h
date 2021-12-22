@@ -11,10 +11,8 @@
 #include <atomic>
 #include <time.h>
 #include <random>
-
-typedef int GenomeIndex;
-typedef double Fitness;
-typedef uint64_t Genome;
+#include "Crossbreeder.h"
+#include "Types.h"
 
 class Genomes {
 public:
