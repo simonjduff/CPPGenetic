@@ -27,14 +27,23 @@ public:
     void Run();
 
 private:
+    // Percentage of the population to die each generation
     const int _cullPercentage = 20;
+    // Actual number of genomes to kill each generation
+    int _numberToCull;
+    // Percentage of the population to mutate
     const int _mutationPercentage = 5;
+    // Population size
     int _populationCount;
     std::shared_ptr<Genome[]> _genomes;
-    std::unique_ptr<std::map<GenomeIndex,Fitness>> _fitness;
+    // Map of Fitnesses, indexed by Genome
+    std::shared_ptr<std::map<Genome,Fitness>> _fitness;
+    std::shared_ptr<std::map<Genome,Fitness>> _historicalFitness;
+    // Synchronization of processing index across multiple threads
     static std::atomic<int> CurrentFitnessIndex;
     std::uniform_int_distribution<int> _randomGenomeIndex;
     std::uniform_int_distribution<int> _randomCutPoint;
+    std::uniform_int_distribution<int> _aliveIndex;
     std::mt19937 _rng;
     std::shared_ptr<Crossbreeder> _crossbreeder;
     std::function<Fitness(Genome)> _fitnessTest;
@@ -58,7 +67,9 @@ private:
     static void FitnessThread(int threadNumber,
                               int populationCount,
                               std::function<Fitness(Genome)> fitnessTest,
-                              std::shared_ptr<Genome[]> genomes);
+                              std::shared_ptr<Genome[]> genomes,
+                              std::shared_ptr<std::map<Genome,Fitness>> fitness,
+                              std::shared_ptr<std::map<Genome,Fitness>> historicalFitness);
 };
 
 #endif //GENETIC_GENOMES_H
