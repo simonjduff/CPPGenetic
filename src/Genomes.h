@@ -27,11 +27,12 @@ public:
     void Run();
 
 private:
-    int _populationCount;
-    std::unique_ptr<Genome[]> _genomes;
-    std::unique_ptr<std::map<GenomeIndex,Fitness>> _fitness;
-    std::atomic<int> _currentFitnessIndex = 0;
     const int _cullPercentage = 20;
+    const int _mutationPercentage = 5;
+    int _populationCount;
+    std::shared_ptr<Genome[]> _genomes;
+    std::unique_ptr<std::map<GenomeIndex,Fitness>> _fitness;
+    static std::atomic<int> CurrentFitnessIndex;
     std::uniform_int_distribution<int> _randomGenomeIndex;
     std::uniform_int_distribution<int> _randomCutPoint;
     std::mt19937 _rng;
@@ -42,19 +43,22 @@ private:
     // create random sample population
     void BuildInitialPopulation();
 
+    // Spin up N threads (maybe 10) until all the fitnesses are calculated
+    void CalculateFitness();
+
     // select _cullPercentage * 2 genomes to crossbreed, overwriting the genomes of _cullPercentage in _genomes
     // select N points (2?) to cut in the genome and crossbreed with another genome
     void CrossBreed();
 
-    // Spin up N threads (maybe 10) until all the fitnesses are calculated
-    void CalculateFitness();
-
     // do mutation
     void Mutate();
 
-    void FitnessThread();
-
     void SortFitness();
+
+    static void FitnessThread(int threadNumber,
+                              int populationCount,
+                              std::function<Fitness(Genome)> fitnessTest,
+                              std::shared_ptr<Genome[]> genomes);
 };
 
 #endif //GENETIC_GENOMES_H

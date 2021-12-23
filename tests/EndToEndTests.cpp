@@ -11,7 +11,11 @@ TEST(EndToEndTests, SmallGenome) {
     auto crossbreeder = std::make_shared<Crossbreeder>();
 
     auto fitnessTest = [](Genome genome){
-        return genome == 999999 ? 1 : abs(1./(genome - 999999));
+        uint64_t mask = pow(2, 31) -1;
+        int32_t calc = (int32_t)(genome & mask);
+
+        double result = calc == 999999 ? INT64_MAX : INT32_MAX/(double)abs((calc - 999999));
+        return result;
     };
 
     auto genomeGenerator = [](uint64_t seed){
@@ -24,4 +28,6 @@ TEST(EndToEndTests, SmallGenome) {
                                              10000);
 
     genetic->Run();
+
+    EXPECT_EQ(1,-1);
 }
