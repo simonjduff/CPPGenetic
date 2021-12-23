@@ -48,6 +48,7 @@ private:
     std::shared_ptr<Crossbreeder> _crossbreeder;
     std::function<Fitness(Genome)> _fitnessTest;
     std::function<Genome(uint64_t)> _genomeGenerator;
+    std::uniform_int_distribution<uint64_t> _genomeSeed;
 
     // create random sample population
     void BuildInitialPopulation();

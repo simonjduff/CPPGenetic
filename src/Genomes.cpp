@@ -19,6 +19,7 @@ Genomes::Genomes(std::shared_ptr<Crossbreeder> crossbreeder,
     _randomCutPoint = std::uniform_int_distribution<int> (0, 63);
     _numberToCull = (_cullPercentage / 100.0) * _populationCount;
     _aliveIndex = std::uniform_int_distribution<int> (0, _populationCount - _numberToCull);
+    _genomeSeed = std::uniform_int_distribution<uint64_t> (0, UINT64_MAX);
     _crossbreeder = crossbreeder;
     _fitnessTest = fitnessTest;
     _genomeGenerator = genomeGenerator;
@@ -31,13 +32,11 @@ Genomes::Genomes(std::shared_ptr<Crossbreeder> crossbreeder,
 void Genomes::Run(){
     BuildInitialPopulation();
 
-    //TODO Add generation loop
     Fitness bestFitness = 0;
     int sameFitnessCounter = 0;
     int generationCounter = 0;
 
     while (sameFitnessCounter < 100) {
-        printf("Generation %d\n", generationCounter++);
         CalculateFitness();
 
         // Resort the _genome array so that high fitness is at the beginning
@@ -45,16 +44,17 @@ void Genomes::Run(){
         sameFitnessCounter = bestFitness == _fitness->at(_genomes[0]) ? sameFitnessCounter + 1 : 0;
         bestFitness = _fitness->at(_genomes[0]);
 
-        printf("Best fitness %llu %f\n", _genomes[0], bestFitness);
+        printf("Generation %d Best fitness %llu %f\n", generationCounter++, _genomes[0], bestFitness);
 
         CrossBreed();
+
+        Mutate();
     }
 }
 
 void Genomes::BuildInitialPopulation() {
-    auto random = std::uniform_int_distribution<uint64_t> (0, UINT64_MAX);
     for (int i=0;i<_populationCount;i++){
-        _genomes[i] = _genomeGenerator(random(_rng));
+        _genomes[i] = _genomeGenerator(_genomeSeed(_rng));
     }
 }
 
@@ -118,6 +118,14 @@ void Genomes::CalculateFitness() {
     }
 }
 
+void Genomes::Mutate() {
+    int mutationCount = (_mutationPercentage / 100.0) * _populationCount;
+    for (int i=0; i < mutationCount; i++){
+        auto index = _randomGenomeIndex(_rng);
+        _genomes[index] = _genomeGenerator(_genomeSeed(_rng));
+    }
+}
+
 void Genomes::FitnessThread(int threadNumber,
                             int populationCount,
                             std::function<Fitness(Genome)> fitnessTest,
@@ -125,6 +133,9 @@ void Genomes::FitnessThread(int threadNumber,
                             std::shared_ptr<std::map<Genome,Fitness>> fitness,
                             std::shared_ptr<std::map<Genome,Fitness>> historicalFitness){
     static std::mutex mtx;
+
+    // TODO Could improve mutex locking here. Each thread could have a buffer and only lock the output map when it needs to write
+
     // use CurrentFitnessIndex to keep going until queue is empty;
     int myIndex = 0;
     while (myIndex < populationCount){
