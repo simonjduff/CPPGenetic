@@ -11,50 +11,66 @@
 #include <atomic>
 #include <time.h>
 #include <random>
-
-typedef int GenomeIndex;
-typedef double Fitness;
-typedef uint64_t Genome;
+#include <functional>
+#include "Crossbreeder.h"
+#include "Types.h"
 
 class Genomes {
 public:
     /*
-     * genomeSize - number of int64s required to hold the genome
      * populationCount - number of organisms
      */
-    Genomes(int genomeSize, int populationCount);
+    Genomes(std::shared_ptr<Crossbreeder> crossbreeder,
+            std::function<Genome(uint64_t seed)> genomeGenerator,
+            std::function<Fitness(Genome)> fitness,
+            int populationCount);
+    void Run();
 
 private:
-    int _genomeSize;
-    int _populationCount;
-    std::unique_ptr<Genome[]> _genomes;
-    std::unique_ptr<std::map<GenomeIndex,Fitness>> _fitness;
-    std::atomic<int> _currentFitnessIndex = 0;
+    // Percentage of the population to die each generation
     const int _cullPercentage = 20;
+    // Actual number of genomes to kill each generation
+    int _numberToCull;
+    // Percentage of the population to mutate
+    const int _mutationPercentage = 5;
+    // Population size
+    int _populationCount;
+    std::shared_ptr<Genome[]> _genomes;
+    // Map of Fitnesses, indexed by Genome
+    std::shared_ptr<std::map<Genome,Fitness>> _fitness;
+    std::shared_ptr<std::map<Genome,Fitness>> _historicalFitness;
+    // Synchronization of processing index across multiple threads
+    static std::atomic<int> CurrentFitnessIndex;
     std::uniform_int_distribution<int> _randomGenomeIndex;
     std::uniform_int_distribution<int> _randomCutPoint;
+    std::uniform_int_distribution<int> _aliveIndex;
     std::mt19937 _rng;
-
-    Genome* getGenome(int index);
-
-    void setGenome(int index, Genome genome[]);
+    std::shared_ptr<Crossbreeder> _crossbreeder;
+    std::function<Fitness(Genome)> _fitnessTest;
+    std::function<Genome(uint64_t)> _genomeGenerator;
+    std::uniform_int_distribution<uint64_t> _genomeSeed;
 
     // create random sample population
-    void buildInitialPopulation();
+    void BuildInitialPopulation();
+
+    // Spin up N threads (maybe 10) until all the fitnesses are calculated
+    void CalculateFitness();
 
     // select _cullPercentage * 2 genomes to crossbreed, overwriting the genomes of _cullPercentage in _genomes
     // select N points (2?) to cut in the genome and crossbreed with another genome
-    void crossBreed();
-
-    // Spin up N threads (maybe 10) until all the fitnesses are calculated
-    void calculateFitness();
+    void CrossBreed();
 
     // do mutation
-    void mutate();
+    void Mutate();
 
-    void fitnessThread();
+    void SortFitness();
 
-    void sortFitness();
+    static void FitnessThread(int threadNumber,
+                              int populationCount,
+                              std::function<Fitness(Genome)> fitnessTest,
+                              std::shared_ptr<Genome[]> genomes,
+                              std::shared_ptr<std::map<Genome,Fitness>> fitness,
+                              std::shared_ptr<std::map<Genome,Fitness>> historicalFitness);
 };
 
 #endif //GENETIC_GENOMES_H

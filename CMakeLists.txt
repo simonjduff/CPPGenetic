@@ -3,6 +3,10 @@ project(Genetic)
 
 set(CMAKE_CXX_STANDARD 20)
 
+# Find all code files so CLion recognizes them for include.
+include_directories(src)
+file(GLOB_RECURSE SOURCE_FILES src/*.cpp src/*.hpp src/*.c src/*.h tests/*.cpp tests/*.hpp)
+
 add_subdirectory(src)
 add_subdirectory(tests)
 
